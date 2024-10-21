@@ -1,5 +1,6 @@
 import 'package:damping/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:damping/screen/splash/splash_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,6 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'New Project', // Berikan judul untuk aplikasi
       debugShowCheckedModeBanner: false, // Menyembunyikan banner debug
+      initialRoute: SplashScreen.routeName,
       routes: routes, // Mengatur rute dari file routes.dart
     );
   }
