@@ -8,7 +8,7 @@ const Color inActiveIconColor = Color.fromARGB(255, 252, 59, 0);
 class Navigation extends StatefulWidget {
   const Navigation({Key? key}) : super(key: key);
 
-  static String routeName = "/";
+  static String routeName = "/navigation";
 
   @override
   State<Navigation> createState() => _InitScreenState();

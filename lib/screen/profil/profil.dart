@@ -84,8 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               press: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const MyAccountScreen()),
+                  MaterialPageRoute(builder: (context) => MyAccountScreen()),
                 );
               },
             ),
