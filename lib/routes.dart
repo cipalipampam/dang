@@ -4,7 +4,9 @@ import 'package:damping/screen/message/message.dart';
 import 'package:damping/screen/profil/profil.dart';
 import 'package:flutter/material.dart';
 // ignore: unused_import
-import 'dart:io';
+// import 'dart:io';
+// ignore: unused_import
+import 'dart:js';
 
 // We use name route
 // All our routes will be available here
