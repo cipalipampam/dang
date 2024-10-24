@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart'; // Tambahkan impor ini
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
 import '../../../constants.dart';
+import 'package:damping/service/api_service.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -13,12 +17,16 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   String? name;
-  String? username;
   String? email;
   String? password;
   String? confirmPassword;
+  String? photo; // Menyimpan path atau URL foto
   final List<String?> errors = [];
   bool _isLoading = false;
+
+  // Buat instance ApiService
+  final ApiService apiService = ApiService();
+  final ImagePicker _picker = ImagePicker();
 
   void addError({String? error}) {
     if (!errors.contains(error)) {
@@ -32,6 +40,42 @@ class _SignUpFormState extends State<SignUpForm> {
     if (errors.contains(error)) {
       setState(() {
         errors.remove(error);
+      });
+    }
+  }
+
+  Future<void> handleSignUp() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      setState(() {
+        _isLoading = true; // Set loading state
+      });
+
+      // Panggil fungsi register dari ApiService
+      bool success =
+          await apiService.register(name!, email!, password!, photo as File?);
+
+      setState(() {
+        _isLoading = false; // Reset loading state
+      });
+
+      if (success) {
+        // Jika registrasi berhasil, arahkan ke halaman login atau halaman lain
+        Navigator.pushReplacementNamed(
+            context, '/sign_in'); // Ganti dengan rute yang sesuai
+      } else {
+        // Tampilkan pesan kesalahan jika registrasi gagal
+        addError(error: "Registration failed. Please try again.");
+      }
+    }
+  }
+
+  Future<void> pickImage() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        photo = pickedFile.path; // Menyimpan path foto
       });
     }
   }
@@ -53,22 +97,6 @@ class _SignUpFormState extends State<SignUpForm> {
             decoration: const InputDecoration(
               labelText: "Name",
               hintText: "Enter your name",
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
-            ),
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            onSaved: (newValue) => username = newValue,
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                removeError(error: kPassNullError);
-              }
-              username = value;
-            },
-            decoration: const InputDecoration(
-              labelText: "Username",
-              hintText: "Enter your username",
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
             ),
@@ -157,22 +185,32 @@ class _SignUpFormState extends State<SignUpForm> {
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
             ),
           ),
+          const SizedBox(height: 20),
+          GestureDetector(
+            onTap: pickImage,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.camera_alt, color: Colors.grey),
+                  const SizedBox(width: 10),
+                  Text(photo == null ? "Add Photo" : "Photo added"),
+                ],
+              ),
+            ),
+          ),
           FormError(errors: errors),
           const SizedBox(height: 20),
           ElevatedButton(
-              onPressed: !_isLoading
-                  ? () {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        // Implement any additional form handling here
-                      }
-                    }
-                  : null,
-              child: !_isLoading
-                  ? const Text("Sign Up")
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    )),
+            onPressed: !_isLoading ? handleSignUp : null,
+            child: !_isLoading
+                ? const Text("Sign Up")
+                : const Center(child: CircularProgressIndicator()),
+          ),
         ],
       ),
     );
