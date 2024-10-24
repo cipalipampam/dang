@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../constants.dart';
-// import '../sign_in/sign_in_screen.dart'; // Pastikan file sign_in sudah ada
 import 'components/splash_content.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -25,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Delay selama 10 detik lalu navigasi ke halaman SignIn
+    // Delay selama 4 detik lalu navigasi ke halaman SignIn
     Future.delayed(const Duration(seconds: 4), () {
       Navigator.pushNamed(
           context, '/sign_in'); // Ganti dengan route halaman SignIn
@@ -81,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                       ),
                       const Spacer(flex: 3),
-                      // Tombol "Continue" dihapus
+                      // Tombol "Continue" bisa ditambahkan di sini
                       const Spacer(),
                     ],
                   ),

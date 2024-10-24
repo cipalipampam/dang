@@ -33,11 +33,20 @@ class _SplashContentState extends State<SplashContent> {
           textAlign: TextAlign.center,
         ),
         const Spacer(flex: 2),
-        Image.asset(
-          widget.image!,
-          height: 265,
-          width: 235,
-        ),
+        // Memuat gambar jika ada, jika tidak tampilkan kontainer abu-abu
+        if (widget.image != null && widget.image!.isNotEmpty)
+          Image.asset(
+            widget.image!,
+            height: 265,
+            width: 235,
+          )
+        else
+          Container(
+            height: 265,
+            width: 235,
+            color: Colors.grey, // Warna default sebagai placeholder
+            child: const Center(child: Text("No Image Available")),
+          ),
       ],
     );
   }

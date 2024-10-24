@@ -9,7 +9,7 @@ class Message extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Catering Chat'),
+        title: const Text('DangLing Chat'),
       ),
       body: ChatListScreen(), // Tampilkan ChatListScreen sebagai konten utama
     );
