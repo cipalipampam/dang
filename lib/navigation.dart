@@ -20,7 +20,7 @@ class _InitScreenState extends State<Navigation> {
   void updateCurrentIndex(int index) {
     setState(() {
       _selectedIndex = index;
-    });
+    }); 
   }
 
   final List<Widget> pages = [

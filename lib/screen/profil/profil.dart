@@ -1,10 +1,11 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:damping/screen/profil/component/helpcenter.dart';
 import 'package:damping/screen/profil/component/myaccount.dart';
 import 'package:damping/screen/profil/component/mystore.dart';
 import 'package:damping/screen/profil/component/profilmenu.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:damping/screen/profil/component/tambahpedagang.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String routeName = "/profile";
@@ -25,6 +26,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _imagePath = pickedFile.path;
       });
     }
+  }
+
+  // Fungsi untuk menanyakan apakah sudah mendaftar sebagai pedagang
+  void _checkStoreRegistration() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Store Registration"),
+          content: const Text("Have you registered as a store owner?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Not Yet"),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TambahPedagang()),
+                );
+              },
+            ),
+            TextButton(
+              child: const Text("Yes, I have"),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MyStoreScreen()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -67,11 +105,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               child: CircleAvatar(
                 radius: 50,
-                backgroundImage: _imagePath.isNotEmpty
-                    ? FileImage(
-                        File(_imagePath)) // Use FileImage to display the image
-                    : null,
-                backgroundColor: Colors.orange, // Background color for avatar
+                backgroundImage:
+                    _imagePath.isNotEmpty ? FileImage(File(_imagePath)) : null,
+                backgroundColor: Colors.orange,
                 child: _imagePath.isEmpty
                     ? const Icon(Icons.add_a_photo, color: Colors.white)
                     : null,
@@ -92,11 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               text: "My Store",
               icon: Icons.store,
               press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MyStoreScreen()),
-                );
+                _checkStoreRegistration(); // Mengecek status pendaftaran sebelum ke halaman store
               },
             ),
             ProfileMenu(
@@ -114,7 +146,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               text: "Log Out",
               icon: Icons.logout,
               press: () {
-                // Fungsi logout dinonaktifkan sementara
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Logout button pressed')),
                 );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:damping/screen/profil/component/updateaccount.dart';
 
 class MyAccountScreen extends StatefulWidget {
   @override
@@ -9,6 +10,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _alamatController = TextEditingController();
   String? _imagePath;
 
   @override
@@ -18,6 +20,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     _nameController.text = "John Doe";
     _emailController.text = "john.doe@example.com";
     _phoneController.text = "+1 234 567 890";
+    _alamatController.text = "Alamat";
   }
 
   @override
@@ -25,6 +28,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _alamatController.dispose();
     super.dispose();
   }
 
@@ -117,18 +121,29 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             _buildProfileItem('Email', _emailController.text),
             const Divider(),
             _buildProfileItem('Phone', _phoneController.text),
+            const Divider(),
+            _buildProfileItem('Alamat', _alamatController.text),
 
             const SizedBox(height: 30),
 
             // Edit Profile Button
             ElevatedButton.icon(
               onPressed: () {
-                // Logika untuk mengedit profil
+                // Navigasi ke halaman UpdateProfileForm
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UpdateProfileForm()),
+                );
               },
-              icon: const Icon(Icons.edit),
-              label: const Text('Edit Profile'),
+              icon: const Icon(Icons.edit,
+                  color: Colors.black), // Ubah warna ikon menjadi hitam
+              label: const Text(
+                'Edit Profile',
+                style: TextStyle(
+                    color: Colors.black), // Ubah warna teks menjadi hitam
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orangeAccent,
+                backgroundColor: Colors.orangeAccent, // Warna latar belakang
                 padding: const EdgeInsets.symmetric(
                   vertical: 12,
                   horizontal: 24,
@@ -138,7 +153,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                   fontWeight: FontWeight.bold,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10), // Border radius
                 ),
               ),
             ),

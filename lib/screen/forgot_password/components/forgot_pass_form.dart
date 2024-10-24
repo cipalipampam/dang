@@ -82,11 +82,34 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
           const SizedBox(height: 8),
           FormError(errors: errors),
           const SizedBox(height: 8),
+          // Tombol "Continue" dengan style yang lebih modern
           ElevatedButton(
-            onPressed: handleForgotPassword,
-            child: const Text("Continue"),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                // Proses lanjutan saat tombol diklik
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: kPrimaryColor, // Warna teks di tombol
+              padding: const EdgeInsets.symmetric(
+                vertical: 16.0, // Padding atas-bawah
+                horizontal: 32.0, // Padding kanan-kiri
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                    30.0), // Membuat sudut tombol melengkung
+              ),
+            ),
+            child: const Text(
+              "Continue",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 16), const SizedBox(height: 16),
           const NoAccountText(),
         ],
       ),
