@@ -1,11 +1,11 @@
+import 'package:damping/service/api_service.dart';
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
 import '../../../constants.dart';
 import '../../../helper/keyboard.dart';
 import '../../forgot_password/forgot_password_screen.dart';
-// import '../../login_success/login_success_screen.dart';
 
 class SignForm extends StatefulWidget {
   const SignForm({super.key});
@@ -20,6 +20,9 @@ class _SignFormState extends State<SignForm> {
   String? password;
   bool? remember = false;
   final List<String?> errors = [];
+
+  // Buat instance ApiService
+  final ApiService apiService = ApiService();
 
   void addError({String? error}) {
     if (!errors.contains(error)) {
@@ -37,6 +40,37 @@ class _SignFormState extends State<SignForm> {
     }
   }
 
+  Future<void> handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      KeyboardUtil.hideKeyboard(context);
+
+      // Panggil fungsi login dari ApiService
+      bool success = await apiService.login(email!, password!);
+
+      if (success) {
+        // Jika login berhasil, simpan status login di SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true); // Menyimpan status login
+
+        // Arahkan ke halaman utama
+        Navigator.pushReplacementNamed(context,
+            '/navigation'); // Ganti '/navigation' dengan rute tujuan Anda
+      } else {
+        // Tampilkan pesan kesalahan jika login gagal
+        addError(error: "Login failed. Please check your credentials.");
+      }
+    }
+  }
+
+  Future<void> handleLogout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn'); // Hapus status login
+
+    Navigator.pushReplacementNamed(
+        context, '/sign_in'); // Kembali ke halaman login
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -52,7 +86,6 @@ class _SignFormState extends State<SignForm> {
               } else if (emailValidatorRegExp.hasMatch(value)) {
                 removeError(error: kInvalidEmailError);
               }
-              return;
             },
             validator: (value) {
               if (value!.isEmpty) {
@@ -67,8 +100,6 @@ class _SignFormState extends State<SignForm> {
             decoration: const InputDecoration(
               labelText: "Email",
               hintText: "Enter your email",
-              // If  you are using latest version of flutter then lable text and hint text shown like this
-              // if you r using flutter less then 1.20.* then maybe this is not working properly
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
             ),
@@ -83,7 +114,6 @@ class _SignFormState extends State<SignForm> {
               } else if (value.length >= 8) {
                 removeError(error: kShortPassError);
               }
-              return;
             },
             validator: (value) {
               if (value!.isEmpty) {
@@ -98,8 +128,6 @@ class _SignFormState extends State<SignForm> {
             decoration: const InputDecoration(
               labelText: "Password",
               hintText: "Enter your password",
-              // If  you are using latest version of flutter then lable text and hint text shown like this
-              // if you r using flutter less then 1.20.* then maybe this is not working properly
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
             ),
@@ -130,14 +158,7 @@ class _SignFormState extends State<SignForm> {
           FormError(errors: errors),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-                // if all are valid then go to success screen
-                KeyboardUtil.hideKeyboard(context);
-                // Navigator.pushNamed(context, LoginSuccessScreen.routeName);
-              }
-            },
+            onPressed: handleLogin, // Mengganti di sini
             child: const Text("Continue"),
           ),
         ],

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
 import '../../../components/no_account_text.dart';
 import '../../../constants.dart';
+import '../../../service/api_service.dart';
 
 class ForgotPassForm extends StatefulWidget {
   const ForgotPassForm({super.key});
@@ -16,6 +16,28 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
   final _formKey = GlobalKey<FormState>();
   List<String> errors = [];
   String? email;
+
+  Future<void> handleForgotPassword() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      // Panggil API forgot password
+      bool success = await ApiService().forgotPassword(email!);
+
+      if (success) {
+        // Tampilkan pesan sukses
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Password reset link has been sent to your email."),
+        ));
+      } else {
+        // Tampilkan pesan error jika gagal
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Failed to send reset link. Please try again."),
+        ));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -36,7 +58,6 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
                   errors.remove(kInvalidEmailError);
                 });
               }
-              return;
             },
             validator: (value) {
               if (value!.isEmpty && !errors.contains(kEmailNullError)) {
@@ -54,8 +75,6 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             decoration: const InputDecoration(
               labelText: "Email",
               hintText: "Enter your email",
-              // If  you are using latest version of flutter then lable text and hint text shown like this
-              // if you r using flutter less then 1.20.* then maybe this is not working properly
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
             ),
@@ -64,11 +83,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
           FormError(errors: errors),
           const SizedBox(height: 8),
           ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Do what you want to do
-              }
-            },
+            onPressed: handleForgotPassword,
             child: const Text("Continue"),
           ),
           const SizedBox(height: 16),
