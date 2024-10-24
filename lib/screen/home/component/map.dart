@@ -14,7 +14,8 @@ class _MapSectionState extends State<MapSection> {
   late MapController
       _mapController; // Gunakan late untuk memastikan ini diinisialisasi
   LatLng? _currentPosition;
-  double _currentZoom = 14.0;
+  double _currentZoom = 13.5;
+  double _radius = 2000;
 
   @override
   void initState() {
@@ -103,9 +104,21 @@ class _MapSectionState extends State<MapSection> {
                         height: 80.0,
                         builder: (ctx) => const Icon(
                           Icons.location_on,
-                          color: Colors.red,
-                          size: 40,
+                          color: Color.fromARGB(255, 255, 247, 0),
+                          size: 20,
                         ),
+                      ),
+                    ],
+                  ),
+                  CircleLayer(
+                    circles: [
+                      CircleMarker(
+                        point: _currentPosition!,
+                        color: const Color.fromARGB(255, 249, 249, 249)
+                            .withOpacity(0.3),
+                        borderStrokeWidth: 2.0,
+                        useRadiusInMeter: true,
+                        radius: _radius, // Radius dalam meter
                       ),
                     ],
                   ),
