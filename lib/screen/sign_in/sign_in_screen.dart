@@ -10,9 +10,7 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        
-      ),
+      appBar: AppBar(),
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
@@ -35,7 +33,7 @@ class SignInScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  const SignForm(),
+                  const SignInForm(),
                   const SizedBox(height: 16),
                   const SizedBox(height: 20),
                   const NoAccountText(),

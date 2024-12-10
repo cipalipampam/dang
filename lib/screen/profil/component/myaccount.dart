@@ -1,55 +1,20 @@
-import 'package:flutter/material.dart';
 import 'package:damping/screen/profil/component/updateaccount.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:damping/service/sharedProvider.dart';
 
-class MyAccountScreen extends StatefulWidget {
-  @override
-  _MyAccountScreenState createState() => _MyAccountScreenState();
-}
-
-class _MyAccountScreenState extends State<MyAccountScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _alamatController = TextEditingController();
-  String? _imagePath;
-
-  @override
-  void initState() {
-    super.initState();
-    // Dummy data
-    _nameController.text = "John Doe";
-    _emailController.text = "john.doe@example.com";
-    _phoneController.text = "+1 234 567 890";
-    _alamatController.text = "Alamat";
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _alamatController.dispose();
-    super.dispose();
-  }
-
-  Widget _buildProfileItem(String label, String text) {
+class MyAccountScreen extends StatelessWidget {
+  Widget _buildProfileItem(String label, String? text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Container(
-            width: 4,
-            height: 20,
-            color: Colors.orangeAccent,
-          ),
+          Container(width: 4, height: 20, color: Colors.indigoAccent),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
+              "$label: ${text ?? 'Not available'}",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -59,75 +24,34 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final sharedProvider = Provider.of<Sharedprovider>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'My Account',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-        ),
-        backgroundColor: Colors.orangeAccent,
-        elevation: 4,
+        title: const Text("My Account",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+        backgroundColor: Colors.indigoAccent,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Profile Picture Section
             Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.orange.shade200,
-                    backgroundImage: _imagePath != null
-                        ? AssetImage(_imagePath!) // Use image if available
-                        : null,
-                    child: _imagePath == null
-                        ? const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: Colors.white,
-                          )
-                        : null,
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 4,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                        border: Border.all(width: 2, color: Colors.orange),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.edit, size: 20),
-                        onPressed: () {
-                          // Logika untuk edit gambar profil
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+              child: CircleAvatar(
+                radius: 60,
+                backgroundColor: Colors.indigoAccent.shade100,
+                child: const Icon(Icons.person, size: 60, color: Colors.white),
               ),
             ),
             const SizedBox(height: 25),
+            _buildProfileItem('Name', sharedProvider.nama),
+            _buildProfileItem('Email', sharedProvider.email),
+            _buildProfileItem('Password', sharedProvider.password),
+            _buildProfileItem('Role', sharedProvider.role),
+            const SizedBox(height: 20),
 
-            // Name, Email, Phone Section
-            _buildProfileItem('Name', _nameController.text),
-            const Divider(),
-            _buildProfileItem('Email', _emailController.text),
-            const Divider(),
-            _buildProfileItem('Phone', _phoneController.text),
-            const Divider(),
-            _buildProfileItem('Alamat', _alamatController.text),
-
-            const SizedBox(height: 30),
-
-            // Edit Profile Button
-            ElevatedButton.icon(
+            // Tombol untuk membuka halaman UpdateProfileForm
+            ElevatedButton(
               onPressed: () {
                 // Navigasi ke halaman UpdateProfileForm
                 Navigator.push(
@@ -135,26 +59,19 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                   MaterialPageRoute(builder: (context) => UpdateProfileForm()),
                 );
               },
-              icon: const Icon(Icons.edit,
-                  color: Colors.black), // Ubah warna ikon menjadi hitam
-              label: const Text(
-                'Edit Profile',
-                style: TextStyle(
-                    color: Colors.black), // Ubah warna teks menjadi hitam
-              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orangeAccent, // Warna latar belakang
+                backgroundColor: Colors.indigoAccent,
                 padding: const EdgeInsets.symmetric(
                   vertical: 12,
                   horizontal: 24,
                 ),
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10), // Border radius
+                  borderRadius: BorderRadius.circular(16.0),
                 ),
+              ),
+              child: const Text(
+                'Update Profile',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -162,13 +79,4 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    theme: ThemeData(
-      primaryColor: Colors.orangeAccent,
-    ),
-    home: MyAccountScreen(),
-  ));
 }

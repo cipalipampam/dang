@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants.dart';
 import 'components/splash_content.dart';
 
@@ -17,30 +17,44 @@ class _SplashScreenState extends State<SplashScreen> {
   List<Map<String, String>> splashData = [
     {
       "text": "Welcome to DangLing, Let’s JOS!",
-      "image": "assets/images/firman.jpg"
+      "image": "assets/images/DL.jpg"
     },
   ];
 
   @override
   void initState() {
     super.initState();
-    // Delay selama 4 detik lalu navigasi ke halaman SignIn
-    Future.delayed(const Duration(seconds: 4), () {
-      Navigator.pushNamed(
-          context, '/sign_in'); // Ganti dengan route halaman SignIn
-    });
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token != null && token.isNotEmpty) {
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushNamed(context, '/navigation');
+      });
+    } else {
+      // Jika token tidak ada, arahkan ke halaman login
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushNamed(context, '/sign_in');
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:
+          const Color.fromRGBO(83, 109, 254, 1), // Warna latar belakang
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
           child: Column(
             children: <Widget>[
               Expanded(
-                flex: 3,
+                flex: 8,
                 child: PageView.builder(
                   onPageChanged: (value) {
                     setState(() {
@@ -55,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               Expanded(
-                flex: 2,
+                flex: 1,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
@@ -80,7 +94,6 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                       ),
                       const Spacer(flex: 3),
-                      // Tombol "Continue" bisa ditambahkan di sini
                       const Spacer(),
                     ],
                   ),

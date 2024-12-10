@@ -15,18 +15,15 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
   String? alamat;
   LatLng? selectedLocation;
 
-  // Fungsi untuk mendapatkan lokasi sekarang
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Cek apakah layanan lokasi diaktifkan
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
 
-    // Cek izin lokasi
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -88,12 +85,12 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
       appBar: AppBar(
         title: Text("Update Profile"),
         centerTitle: true,
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.indigoAccent,
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.orange, Colors.white],
+            colors: [Colors.indigoAccent, Colors.white],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -197,6 +194,16 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
                         icon: const Icon(Icons.location_on),
                         label: const Text("Use Current Location"),
                         onPressed: _getCurrentLocation,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigoAccent,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 24,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 16),
 
@@ -205,6 +212,16 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
                         icon: const Icon(Icons.map),
                         label: const Text("Pick Location from Map"),
                         onPressed: _pickLocationFromMap,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigoAccent,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 24,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 16),
 
@@ -220,7 +237,7 @@ class _UpdateProfileFormState extends State<UpdateProfileForm> {
                         onPressed: _updateProfile,
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.orange,
+                          backgroundColor: Colors.indigoAccent,
                           padding: const EdgeInsets.symmetric(
                             vertical: 12,
                             horizontal: 24,
@@ -303,10 +320,4 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: UpdateProfileForm(),
-  ));
 }

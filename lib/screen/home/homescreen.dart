@@ -1,41 +1,76 @@
-import 'package:damping/screen/home/component/map.dart'; // Pastikan path ini benar
+import 'package:damping/screen/home/component/promo_carousel.dart';
 import 'package:flutter/material.dart';
+import 'package:damping/screen/home/component/map.dart';
+
+// import 'package:damping/screen/home/component/merchant_bottom_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = '/homescreen';
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int unreadNotifications = 5;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('')),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Card(
-                elevation: 4, // Tambahkan efek bayangan
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Container(
-                  height: 300, // Atur tinggi peta
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const MapSection(), // Peta di dalam Card
-                ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(80),
+        child: AppBar(
+          automaticallyImplyLeading: false, // Menghilangkan tombol back
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF536DFE),
+                  Colors.white,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-              const SizedBox(height: 20),
+            ),
+          ),
+          title: Row(
+            children: [
+              // Bagian ini bisa dihilangkan jika tidak diperlukan
+              // Expanded(
+              //   child: Container(
+              //     height: 40,
+              //     decoration: BoxDecoration(
+              //       gradient: LinearGradient(
+              //         colors: [
+              //           const Color.fromRGBO(169, 169, 169, 1),
+              //           Colors.white,
+              //         ],
+              //         begin: Alignment.topCenter,
+              //         end: Alignment.bottomCenter,
+              //       ),
+              //       borderRadius: BorderRadius.circular(20),
+              //     ),
+              //   ),
+              // ),
+              // Gunakan Align untuk menempatkan notifikasi di pojok kanan
             ],
           ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            PromoCarousel(),
+            const SizedBox(height: 10),
+            MapSection(
+              onMerchantSelected: (merchant) {
+                // showMerchantBottomSheet(context, merchant);
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
         ),
       ),
     );

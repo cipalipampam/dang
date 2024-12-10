@@ -1,52 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
 
-import '../../../constants.dart';
+class SplashContent extends StatelessWidget {
+  final String? image;
+  final String? text;
 
-class SplashContent extends StatefulWidget {
-  const SplashContent({
-    Key? key,
-    this.text,
-    this.image,
-  }) : super(key: key);
-  final String? text, image;
+  const SplashContent({super.key, this.image, this.text});
 
-  @override
-  State<SplashContent> createState() => _SplashContentState();
-}
-
-class _SplashContentState extends State<SplashContent> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment:
+          MainAxisAlignment.center, // Mengatur posisi konten agar terpusat
       children: <Widget>[
-        const Spacer(),
-        const Text(
-          "DangLing",
-          style: TextStyle(
-            fontSize: 32,
-            color: kPrimaryColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        // Menambahkan teks "DangLing" dengan font dari Google Fonts
         Text(
-          widget.text!,
-          textAlign: TextAlign.center,
-        ),
-        const Spacer(flex: 2),
-        // Memuat gambar jika ada, jika tidak tampilkan kontainer abu-abu
-        if (widget.image != null && widget.image!.isNotEmpty)
-          Image.asset(
-            widget.image!,
-            height: 265,
-            width: 235,
-          )
-        else
-          Container(
-            height: 265,
-            width: 235,
-            color: Colors.grey, // Warna default sebagai placeholder
-            child: const Center(child: Text("No Image Available")),
+          "DangLing",
+          style: GoogleFonts.lobster(
+            // Menggunakan font Google Fonts
+            textStyle: const TextStyle(
+              fontSize: 40,
+              color: Colors.white, // Warna putih agar kontras dengan background
+            ),
           ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          "Pedagang Keliling",
+          style: GoogleFonts.lobster(
+            // Menggunakan font Google Fonts
+            textStyle: const TextStyle(
+              fontSize: 15,
+              color: Colors.white, // Warna putih agar kontras dengan background
+            ),
+          ),
+        ),
+        const SizedBox(
+            height: 20), // Memberikan jarak antara teks "DangLing" dan gambar
+        // Menampilkan gambar yang diberikan
+        Image.asset(
+          image!, // Memastikan image tidak null
+          height: 270, // Sesuaikan ukuran gambar
+          width: 270, // Sesuaikan ukuran gambar
+        ),
+        const SizedBox(
+            height: 10), // Memberikan jarak antara gambar dan teks berikutnya
+        // Menampilkan teks yang diberikan (dari splashData)
+        Text(
+          text!, // Teks yang berasal dari splashData
+          textAlign: TextAlign.center, // Membuat teks terpusat
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white, // Warna teks
+          ),
+        ),
       ],
     );
   }

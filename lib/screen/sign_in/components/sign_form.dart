@@ -1,29 +1,28 @@
-import 'package:damping/service/api_service.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:damping/service/ApiService.dart';
+import 'package:damping/service/sharedProvider.dart';
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
 import '../../../constants.dart';
 import '../../../helper/keyboard.dart';
-import '../../forgot_password/forgot_password_screen.dart';
 
-class SignForm extends StatefulWidget {
-  const SignForm({super.key});
+class SignInForm extends StatefulWidget {
+  const SignInForm({super.key});
 
   @override
-  _SignFormState createState() => _SignFormState();
+  _SignInFormState createState() => _SignInFormState();
 }
 
-class _SignFormState extends State<SignForm> {
+class _SignInFormState extends State<SignInForm> {
   final _formKey = GlobalKey<FormState>();
   String? email;
   String? password;
-  bool remember = false; // default boolean value to false
+  bool remember = false;
   final List<String?> errors = [];
-
-  // Buat instance ApiService
   final ApiService apiService = ApiService();
 
+  // Method to add error
   void addError({String? error}) {
     if (!errors.contains(error)) {
       setState(() {
@@ -32,6 +31,7 @@ class _SignFormState extends State<SignForm> {
     }
   }
 
+  // Method to remove error
   void removeError({String? error}) {
     if (errors.contains(error)) {
       setState(() {
@@ -40,35 +40,23 @@ class _SignFormState extends State<SignForm> {
     }
   }
 
+  // Method to handle login
   Future<void> handleLogin() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       KeyboardUtil.hideKeyboard(context);
 
-      // Panggil fungsi login dari ApiService
       bool success = await apiService.login(email!, password!);
-
       if (success) {
-        // Jika login berhasil, simpan status login di SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLoggedIn', true); // Menyimpan status login
+        // Call loadProfile in Sharedprovider after successful login
+        Provider.of<Sharedprovider>(context, listen: false).loadProfile();
 
-        // Arahkan ke halaman utama
-        Navigator.pushReplacementNamed(context,
-            '/navigation'); // Ganti '/navigation' dengan rute tujuan Anda
+        // Navigate to main page
+        Navigator.pushReplacementNamed(context, '/navigation');
       } else {
-        // Tampilkan pesan kesalahan jika login gagal
         addError(error: "Login failed. Please check your credentials.");
       }
     }
-  }
-
-  Future<void> handleLogout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('isLoggedIn'); // Hapus status login
-
-    Navigator.pushReplacementNamed(
-        context, '/sign_in'); // Kembali ke halaman login
   }
 
   @override
@@ -76,123 +64,121 @@ class _SignFormState extends State<SignForm> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // align left
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextFormField(
-            keyboardType: TextInputType.emailAddress,
-            onSaved: (newValue) => email = newValue,
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                removeError(error: kEmailNullError);
-              } else if (emailValidatorRegExp.hasMatch(value)) {
-                removeError(error: kInvalidEmailError);
-              }
-            },
-            validator: (value) {
-              if (value!.isEmpty) {
-                addError(error: kEmailNullError);
-                return "";
-              } else if (!emailValidatorRegExp.hasMatch(value)) {
-                addError(error: kInvalidEmailError);
-                return "";
-              }
-              return null;
-            },
-            decoration: InputDecoration(
-              labelText: "Email",
-              hintText: "Enter your email",
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon:
-                  const CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30), // Rounded borders
-              ),
-            ),
-          ),
+          // Email Input Field
+          buildEmailField(),
+
           const SizedBox(height: 20),
-          TextFormField(
-            obscureText: true,
-            onSaved: (newValue) => password = newValue,
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                removeError(error: kPassNullError);
-              } else if (value.length >= 8) {
-                removeError(error: kShortPassError);
-              }
-            },
-            validator: (value) {
-              if (value!.isEmpty) {
-                addError(error: kPassNullError);
-                return "";
-              } else if (value.length < 8) {
-                addError(error: kShortPassError);
-                return "";
-              }
-              return null;
-            },
-            decoration: InputDecoration(
-              labelText: "Password",
-              hintText: "Enter your password",
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon:
-                  const CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30), // Rounded borders
-              ),
-            ),
-          ),
+
+          // Password Input Field
+          buildPasswordField(),
+
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Checkbox(
-                value: remember,
-                activeColor: kPrimaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    remember = value ?? false; // Prevent null
-                  });
-                },
-              ),
-              const Text("Remember me"),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/forgot_password'),
-                child: const Text(
-                  "Forgot Password?",
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: kPrimaryColor, // Highlight the text
-                  ),
-                ),
-              ),
-            ],
-          ),
+
+          // Remember Me and Forgot Password Section
+          buildRememberMeAndForgotPassword(),
+
+          // Error Messages
           FormError(errors: errors),
+
           const SizedBox(height: 16),
+
+          // Login Button
           Center(
-            // Center the button
             child: ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  KeyboardUtil.hideKeyboard(context);
-                  // Navigate to the success screen
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black,
-                backgroundColor: kPrimaryColor, // Button color
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 40, vertical: 15), // Padding for the button
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30), // Rounded corners
-                ), // Set text color to black
-              ),
+              onPressed: handleLogin,
               child: const Text("Login"),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  // Build email input field
+  Widget buildEmailField() {
+    return TextFormField(
+      keyboardType: TextInputType.emailAddress,
+      onSaved: (newValue) => email = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kEmailNullError);
+        } else if (emailValidatorRegExp.hasMatch(value)) {
+          removeError(error: kInvalidEmailError);
+        }
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kEmailNullError);
+          return "";
+        } else if (!emailValidatorRegExp.hasMatch(value)) {
+          addError(error: kInvalidEmailError);
+          return "";
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: "Email",
+        hintText: "Enter your email",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: const CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+      ),
+    );
+  }
+
+  // Build password input field
+  Widget buildPasswordField() {
+    return TextFormField(
+      obscureText: true,
+      onSaved: (newValue) => password = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kPassNullError);
+        } else if (value.length >= 8) {
+          removeError(error: kShortPassError);
+        }
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kPassNullError);
+          return "";
+        } else if (value.length < 8) {
+          addError(error: kShortPassError);
+          return "";
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: "Password",
+        hintText: "Enter your password",
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: const CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+      ),
+    );
+  }
+
+  // Build remember me and forgot password section
+  Widget buildRememberMeAndForgotPassword() {
+    return Row(
+      children: [
+        Checkbox(
+          value: remember,
+          activeColor: kPrimaryColor,
+          onChanged: (value) {
+            setState(() {
+              remember = value ?? false;
+            });
+          },
+        ),
+        const Text("Remember me"),
+        const Spacer(),
+        GestureDetector(
+          onTap: () => Navigator.pushNamed(context, '/forgot_password'),
+          child: const Text("Forgot Password?",
+              style: TextStyle(decoration: TextDecoration.underline)),
+        ),
+      ],
     );
   }
 }
